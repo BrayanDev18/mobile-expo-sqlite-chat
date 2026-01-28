@@ -7,6 +7,7 @@ import {
   ConversationMediaOptions,
   MessageBubble,
 } from "@/screens/conversation/components";
+import { useMediaFilesSelectedStore } from "@/stores";
 import { formatChatDate, isSameDay } from "@/utils";
 import { FlashList } from "@shopify/flash-list";
 import * as MediaLibrary from "expo-media-library";
@@ -32,11 +33,11 @@ const ConversationScreen = () => {
   const [attachments, setAttachments] = useState<AttachmentProps[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<AttachmentProps[]>();
-
   const [showFilePicker, setShowFilePicker] = useState(false);
 
   const { conversation } = useConversation(id as string);
   const { messages, saveMessage } = useMessages(id as string);
+  const { resetMediaFilesSelected } = useMediaFilesSelectedStore();
 
   const { control, reset, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
@@ -69,6 +70,12 @@ const ConversationScreen = () => {
   const handleAttachmentPreview = (attachments: AttachmentProps[]) => {
     setSelectedItem(attachments);
     setPreviewVisible(true);
+  };
+
+  const handleTouchableWithoutFeedback = () => {
+    setOpenEmojiGifsSheet(false);
+    setShowFilePicker(false);
+    resetMediaFilesSelected();
   };
 
   useEffect(() => {
@@ -110,12 +117,7 @@ const ConversationScreen = () => {
 
   return (
     <Screen>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          setOpenEmojiGifsSheet(false);
-          setShowFilePicker(false);
-        }}
-      >
+      <TouchableWithoutFeedback onPress={handleTouchableWithoutFeedback}>
         <View className="flex-1">
           <ConversationHeader user={conversation} />
 
@@ -160,7 +162,10 @@ const ConversationScreen = () => {
 
             <ConversationMediaOptions
               visiblePicker={showFilePicker}
-              handleClosePicker={() => setShowFilePicker(false)}
+              handleClosePicker={() => {
+                setShowFilePicker(false);
+                resetMediaFilesSelected();
+              }}
             />
 
             <EmojiGifsSheet

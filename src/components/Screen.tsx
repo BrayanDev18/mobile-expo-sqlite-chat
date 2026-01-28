@@ -1,5 +1,6 @@
 import { cn, ExtendedEdge, useSafeAreaInsetsStyle } from "@/utils";
 import { useScrollToTop } from "@react-navigation/native";
+import { router } from "expo-router";
 import { ReactNode, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -12,10 +13,9 @@ import {
   ViewStyle,
 } from "react-native";
 import { SystemBarStyle } from "react-native-edge-to-edge";
-import {
-  KeyboardAwareScrollView,
-  KeyboardAwareScrollViewRef,
-} from "react-native-keyboard-controller";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Icon } from "./Icon";
 
 export const DEFAULT_BOTTOM_OFFSET = 50;
 
@@ -50,6 +50,7 @@ interface BaseScreenProps {
    * Pass any additional props directly to the KeyboardAvoidingView component.
    */
   KeyboardAvoidingViewProps?: KeyboardAvoidingViewProps;
+  canGoBack?: boolean;
 }
 
 interface FixedScreenProps extends BaseScreenProps {
@@ -204,7 +205,7 @@ function ScreenWithScrolling(props: ScreenProps) {
     style,
   } = props as ScrollScreenProps;
 
-  const ref = useRef<KeyboardAwareScrollViewRef | null>(null);
+  const ref = useRef<null>(null);
 
   const { scrollEnabled, onContentSizeChange, onLayout } = useAutoPreset(
     props as AutoScreenProps,
@@ -253,15 +254,30 @@ export const Screen = (props: ScreenProps) => {
     KeyboardAvoidingViewProps,
     keyboardOffset = 0,
     safeAreaEdges,
+    canGoBack = false,
   } = props;
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges);
+  const { top } = useSafeAreaInsets();
 
   return (
     <View
       style={[$containerInsets]}
       className={cn(className, "section-bg h-full w-full flex-1")}
     >
+      {canGoBack ? (
+        <View style={{ top }} className="absolute left-2">
+          <Icon
+            name="ArrowLeft"
+            size={22}
+            onPress={() => router.back()}
+            className="h-12 w-12 items-center justify-center"
+          />
+        </View>
+      ) : (
+        false
+      )}
+
       <KeyboardAvoidingView
         behavior={isIos ? "padding" : "height"}
         keyboardVerticalOffset={keyboardOffset}

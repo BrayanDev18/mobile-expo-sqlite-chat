@@ -84,13 +84,13 @@ export const MessageBubble = (props: MessageBubbleProps) => {
             />
           ) : null}
 
-          {/* {audioAttachments && audioAttachments.length > 0 && (
+          {audioAttachments && audioAttachments.length > 0 && (
             <View>
               {audioAttachments.map((attachment, idx) => (
                 <AudioRenderer key={idx} message={message} audio={attachment} />
               ))}
             </View>
-          )} */}
+          )}
 
           {hasBody ? (
             <View className="items-end px-2 py-1">
@@ -335,7 +335,7 @@ const AudioRenderer = (props: AudioRendererProps) => {
           mode="static"
           containerStyle={{
             width: 250,
-            height: 50,
+            height: 46,
           }}
           ref={staticPlayerRef}
           path={audio.url}

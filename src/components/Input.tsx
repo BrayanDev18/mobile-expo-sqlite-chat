@@ -28,7 +28,6 @@ export const Input: React.FC<InputProps> = ({
   iconName,
   ...props
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -49,13 +48,8 @@ export const Input: React.FC<InputProps> = ({
           <View
             className={cn(
               className,
-              `container-bg flex-row items-center gap-3 rounded-2xl border-2 px-4 ${
-                error
-                  ? "border-red-400"
-                  : isFocused
-                    ? "border-brand-600"
-                    : "border-transparent"
-              }`,
+              "container-bg flex-row items-center gap-3 rounded-full px-4",
+              error && "border-red-400",
             )}
           >
             {iconName ? (
@@ -66,11 +60,7 @@ export const Input: React.FC<InputProps> = ({
               {...props}
               value={value}
               onChangeText={onChange}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => {
-                setIsFocused(false);
-                onBlur();
-              }}
+              onBlur={onBlur}
               secureTextEntry={isPassword && !showPassword}
               className="h-14 flex-1 text-neutral-900 dark:text-neutral-200"
               placeholderTextColor="#9ca3af"

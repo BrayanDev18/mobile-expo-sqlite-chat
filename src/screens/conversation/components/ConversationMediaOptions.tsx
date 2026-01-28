@@ -1,15 +1,17 @@
-import { Icon, Text, ViewSheet } from "@/components";
-import { useMediaLoader } from "@/hooks";
+import { Icon, Input, Text, ViewSheet } from "@/components";
+import { ScreenRoutes } from "@/constants";
+import { useMediaLoader, useMessages } from "@/hooks";
 import { AttachmentProps } from "@/interfaces";
 import { useMediaFilesSelectedStore } from "@/stores";
 import { formatMediaAsset, formatVideoDuration } from "@/utils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import { Image, ImageStyle } from "expo-image";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Video } from "lucide-react-native";
 import React from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { useForm } from "react-hook-form";
+import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface MediaOptionsProps {
@@ -24,19 +26,44 @@ interface FilesToEditPreviewProps {
   setType?: () => void;
 }
 
+const senderId = "brayan_001";
+
 export const ConversationMediaOptions = (props: MediaOptionsProps) => {
   const { visiblePicker, handleClosePicker } = props;
+
+  const { id: conversationId } = useLocalSearchParams();
+  const { bottom } = useSafeAreaInsets();
 
   const { mediaFilesSelected, mediaFilesSelectedIds, toggleMediaFileSelected } =
     useMediaFilesSelectedStore();
 
-  const { bottom } = useSafeAreaInsets();
+  const { saveMessage } = useMessages(conversationId as string);
+  const { media, loadMore } = useMediaLoader();
+
+  const { control, reset, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      conversationId,
+      body: "",
+      type: "body",
+      createdAt: Date.now(),
+      status: "sending",
+      attachments: mediaFilesSelected,
+      senderId,
+      issuingId: conversationId,
+    },
+  });
 
   const handleSelectImage = (image: AttachmentProps) => {
     toggleMediaFileSelected(image, "photo");
   };
 
-  const { media, loadMore } = useMediaLoader();
+  const onSendMessage = async (values: any) => {
+    setValue("attachments", mediaFilesSelected);
+    console.log(values);
+    await saveMessage(values);
+    reset();
+    handleClosePicker();
+  };
 
   return (
     <ViewSheet
@@ -102,12 +129,8 @@ export const ConversationMediaOptions = (props: MediaOptionsProps) => {
         >
           <FilesToEditPreview mediaFilesSelected={mediaFilesSelected} />
 
-          <View className="container-bg h-14 flex-1 rounded-full">
-            <TextInput
-              className="flex-1 px-3 rounded-full"
-              placeholder="Add a comment"
-              placeholderTextColor="gray"
-            />
+          <View className="flex-1">
+            <Input control={control} name="body" placeholder="Message" />
           </View>
 
           <Icon
@@ -115,7 +138,7 @@ export const ConversationMediaOptions = (props: MediaOptionsProps) => {
             size={20}
             color="white"
             strokeWidth={2.5}
-            // onPress={handleSubmit(onSendMessage)}
+            onPress={handleSubmit(onSendMessage)}
             className="h-14 w-14 items-center justify-center rounded-full bg-cyan-500 active:bg-cyan-600"
           />
         </View>
@@ -132,7 +155,7 @@ const FilesToEditPreview = (props: FilesToEditPreviewProps) => {
       style={{ width: 45, height: 45 }}
       onPress={() => {
         router.push({
-          pathname: "/",
+          pathname: ScreenRoutes.imageEditor as any,
           params: {
             conversationId,
           },

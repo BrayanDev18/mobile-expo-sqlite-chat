@@ -1,11 +1,12 @@
-import { Icon } from "@/components";
+import { Icon, Input } from "@/components";
 import { useAudioRecorder } from "@/hooks";
 import { ConversationInputProps, InputSectionProps } from "@/interfaces";
 import { Feather, Fontisto, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { Controller, useWatch } from "react-hook-form";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { useWatch } from "react-hook-form";
+import { TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { RecordingAudioSection } from "./RecordingAudioSection";
 
 export const ConversationInput = (props: ConversationInputProps) => {
   const {
@@ -31,7 +32,7 @@ export const ConversationInput = (props: ConversationInputProps) => {
   return (
     <>
       <View className="gap-4">
-        {/* <View
+        <View
           style={{
             paddingBottom: audioRecorder.showAudioUI ? bottom : 0,
           }}
@@ -43,7 +44,7 @@ export const ConversationInput = (props: ConversationInputProps) => {
             audioRecorder={audioRecorder}
             handleSendMessage={handleSendWithAudio}
           />
-        </View> */}
+        </View>
 
         {!audioRecorder.showAudioUI && (
           <InputSection
@@ -84,26 +85,14 @@ const InputSection = (props: InputSectionProps) => {
           <MaterialCommunityIcons name="sticker-emoji" size={22} color="gray" />
         </TouchableOpacity>
 
-        <Controller
-          control={control}
-          name="body"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex-1 flex-row items-center h-14">
-              <TextInput
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                placeholder="Mensaje"
-                placeholderTextColor="#a3a3a3"
-                className="text-neutral-900 dark:text-neutral-200 text-[15px] font-medium flex-1 px-2"
-                multiline
-                autoCapitalize="none"
-                maxLength={500}
-                textAlignVertical="center"
-              />
-            </View>
-          )}
-        />
+        <View className="flex-1">
+          <Input
+            control={control}
+            name="body"
+            placeholder="Message"
+            className="!px-0"
+          />
+        </View>
 
         <View className="flex-row">
           <TouchableOpacity

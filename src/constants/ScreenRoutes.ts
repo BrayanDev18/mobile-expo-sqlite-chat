@@ -15,6 +15,8 @@ export const ScreenRoutes = {
   newContact: `${rootRoutes}/new-contact` as Href,
   countriesList: `${rootRoutes}/countries-list` as Href,
 
+  imageEditor: `${rootRoutes}/conversation/image-editor` as Href,
+
   editProfile: `${rootRoutes}/edit-profile` as Href,
 } as const;
 
