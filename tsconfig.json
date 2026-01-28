@@ -3,15 +3,25 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/components": ["./src/components"],
+      "@/constants": ["./src/constants"],
+      "@/expo-sqlite/*": ["./src/expo-sqlite/*"],
+      "@/helpers": ["./src/helpers"],
+      "@/hooks": ["./src/hooks"],
+      "@/interfaces": ["./src/interfaces"],
+      "@/screens": ["./src/screens"],
+      "@/screens/*": ["./src/screens/*"],
+      "@/stores": ["./src/stores"],
+      "@/utils": ["./src/utils"],
+      "@/types": ["./src/types"],
+      "@/services": ["./src/services"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
   ]
 }
