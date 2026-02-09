@@ -10,9 +10,8 @@ import {
 import { useMediaFilesSelectedStore } from "@/stores";
 import { formatChatDate, isSameDay } from "@/utils";
 import { FlashList } from "@shopify/flash-list";
-import * as MediaLibrary from "expo-media-library";
 import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { TouchableWithoutFeedback, View } from "react-native";
 
@@ -26,8 +25,6 @@ const senderId = "brayan_001";
 const ConversationScreen = () => {
   const { id } = useLocalSearchParams();
   const flashListRef = useRef(null);
-
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
 
   const [openEmojiGifsSheet, setOpenEmojiGifsSheet] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentProps[]>([]);
@@ -78,16 +75,6 @@ const ConversationScreen = () => {
     resetMediaFilesSelected();
   };
 
-  useEffect(() => {
-    (async () => {
-      if (permissionResponse?.status !== "granted") {
-        await requestPermission();
-      }
-
-      return null;
-    })();
-  }, [requestPermission, permissionResponse?.status]);
-
   const renderMessageItem = (props: RenderMessageItemProps) => {
     const { item: message, index } = props;
 
@@ -119,7 +106,10 @@ const ConversationScreen = () => {
     <Screen>
       <TouchableWithoutFeedback onPress={handleTouchableWithoutFeedback}>
         <View className="flex-1">
-          <ConversationHeader user={conversation} />
+          <ConversationHeader
+            user={conversation}
+            selectedItem={selectedItem as AttachmentProps[]}
+          />
 
           <View className="my-3 flex-1">
             <FlashList
@@ -158,6 +148,14 @@ const ConversationScreen = () => {
                 setOpenEmojiGifsSheet(false);
                 setShowFilePicker((prev) => !prev);
               }}
+              shouldShowInput={!showFilePicker}
+            />
+
+            <EmojiGifsSheet
+              control={control}
+              visibleSheet={openEmojiGifsSheet}
+              handleCloseSheet={handleCloseSheet}
+              onEmojiSelect={handleEmojiSelect}
             />
 
             <ConversationMediaOptions
@@ -166,13 +164,6 @@ const ConversationScreen = () => {
                 setShowFilePicker(false);
                 resetMediaFilesSelected();
               }}
-            />
-
-            <EmojiGifsSheet
-              control={control}
-              visibleSheet={openEmojiGifsSheet}
-              handleCloseSheet={handleCloseSheet}
-              onEmojiSelect={handleEmojiSelect}
             />
           </View>
         </View>

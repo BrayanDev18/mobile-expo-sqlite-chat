@@ -16,6 +16,7 @@ export const ConversationInput = (props: ConversationInputProps) => {
     attachments,
     onAudioRecorded,
     openFilePicker,
+    shouldShowInput,
   } = props;
 
   const { bottom } = useSafeAreaInsets();
@@ -29,38 +30,34 @@ export const ConversationInput = (props: ConversationInputProps) => {
     handleSendMessage();
   };
 
-  return (
-    <>
-      <View className="gap-4">
-        <View
-          style={{
-            paddingBottom: audioRecorder.showAudioUI ? bottom : 0,
-          }}
-          className={
-            audioRecorder.showAudioUI ? "container-bg px-4 mt-4" : "h-0"
-          }
-        >
-          <RecordingAudioSection
-            audioRecorder={audioRecorder}
-            handleSendMessage={handleSendWithAudio}
-          />
-        </View>
-
-        {!audioRecorder.showAudioUI && (
-          <InputSection
-            bottom={bottom}
-            handleOpenEmojiGifsSheet={handleOpenEmojiGifsSheet}
-            control={control}
-            openFilePicker={openFilePicker}
-            inputText={inputText}
-            attachments={attachments}
-            handleSendMessage={handleSendMessage}
-            handleRecorderAction={audioRecorder.handleRecorderAction}
-          />
-        )}
+  return shouldShowInput ? (
+    <View className="gap-4">
+      <View
+        style={{
+          paddingBottom: audioRecorder.showAudioUI ? bottom : 0,
+        }}
+        className={audioRecorder.showAudioUI ? "container-bg px-4 mt-4" : "h-0"}
+      >
+        <RecordingAudioSection
+          audioRecorder={audioRecorder}
+          handleSendMessage={handleSendWithAudio}
+        />
       </View>
-    </>
-  );
+
+      {!audioRecorder.showAudioUI && (
+        <InputSection
+          bottom={bottom}
+          handleOpenEmojiGifsSheet={handleOpenEmojiGifsSheet}
+          control={control}
+          openFilePicker={openFilePicker}
+          inputText={inputText}
+          attachments={attachments}
+          handleSendMessage={handleSendMessage}
+          handleRecorderAction={audioRecorder.handleRecorderAction}
+        />
+      )}
+    </View>
+  ) : null;
 };
 
 const InputSection = (props: InputSectionProps) => {

@@ -1,18 +1,13 @@
 import { Header, Screen } from "@/components";
 import { ScreenRoutes } from "@/constants";
-import { ConversationProps } from "@/interfaces";
+import { useConversations } from "@/hooks";
+import { ConversationItemProps, ConversationProps } from "@/interfaces";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
-import { useConversations } from "../../../hooks/useConversations";
-
-interface ConversationItemProps {
-  conversation: ConversationProps;
-  index: number;
-}
 
 export default function ConversationsScreen() {
   const { conversationList } = useConversations();
@@ -40,7 +35,7 @@ export default function ConversationsScreen() {
         searchPlaceholder="Search conversations ..."
       />
 
-      <View className="flex-1 justify-start p-3">
+      <View className="flex-1 justify-start px-3 bgred">
         <FlashList
           data={conversationList}
           keyExtractor={(item) => item._id}
@@ -48,7 +43,7 @@ export default function ConversationsScreen() {
           onStartReachedThreshold={0.3}
           scrollEventThrottle={16}
           removeClippedSubviews
-          contentContainerClassName="pb-4"
+          contentContainerClassName="pb-36"
           ItemSeparatorComponent={() => <View className="h-3" />}
           showsVerticalScrollIndicator={false}
         />

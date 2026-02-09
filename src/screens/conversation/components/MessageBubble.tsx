@@ -1,4 +1,4 @@
-import { Icon, Text } from "@/components";
+import {Icon, Text} from "@/components";
 import {
   AttachmentProps,
   AudioRendererProps,
@@ -20,12 +20,12 @@ import {
   PlayerState,
   Waveform,
 } from "@simform_solutions/react-native-audio-waveform";
-import { Image } from "expo-image";
-import React, { useRef, useState } from "react";
-import { Alert, Pressable, View } from "react-native";
+import {Image} from "expo-image";
+import React, {useRef, useState} from "react";
+import {Alert, Pressable, View} from "react-native";
 
 export const MessageBubble = (props: MessageBubbleProps) => {
-  const { message, messages, index, handleOpenPreview } = props;
+  const {message, messages, index, handleOpenPreview} = props;
 
   const hasBody = message.body;
 
@@ -87,7 +87,7 @@ export const MessageBubble = (props: MessageBubbleProps) => {
           {audioAttachments && audioAttachments.length > 0 && (
             <View>
               {audioAttachments.map((attachment, idx) => (
-                <AudioRenderer key={idx} message={message} audio={attachment} />
+                <AudioRenderer key={idx} message={message} audio={attachment}/>
               ))}
             </View>
           )}
@@ -106,13 +106,14 @@ export const MessageBubble = (props: MessageBubbleProps) => {
         </View>
       </View>
     </>
-  );
+  )
+    ;
 };
 
 MessageBubble.displayName = "MessageBubble";
 
 const MessageImagesGrouped = (props: MessageImagesGroupedProps) => {
-  const { attachments, message, bubbleStyle, onPress } = props;
+  const {attachments, message, bubbleStyle, onPress} = props;
 
   const [img, img2, img3] = attachments;
 
@@ -152,7 +153,7 @@ const MessageImagesGrouped = (props: MessageImagesGroupedProps) => {
       >
         <View className="relative">
           <Image
-            source={{ uri: firstImageSource }}
+            source={{uri: firstImageSource}}
             style={{
               width:
                 attachments.length === 1
@@ -182,7 +183,7 @@ const MessageImagesGrouped = (props: MessageImagesGroupedProps) => {
           <View className="flex-row gap-2">
             <View className="relative">
               <Image
-                source={{ uri: getImageSource(img2) as string }}
+                source={{uri: getImageSource(img2) as string}}
                 style={{
                   width: 121,
                   height: attachments.length === 2 ? img2Height : 121,
@@ -206,7 +207,7 @@ const MessageImagesGrouped = (props: MessageImagesGroupedProps) => {
             {attachments.length === 3 && getImageSource(img3) && (
               <View className="relative">
                 <Image
-                  source={{ uri: getImageSource(img3) }}
+                  source={{uri: getImageSource(img3)}}
                   style={{
                     width: 121,
                     height: 121,
@@ -246,11 +247,13 @@ const MessageImagesGrouped = (props: MessageImagesGroupedProps) => {
         )}
       </Pressable>
 
-      <View className="items-end px-2 py-1">
-        <Text className=" !text-white text-end">
-          {formatChatDate(message.createdAt as number)}
-        </Text>
-      </View>
+      {!message?.body ? (
+        <View className="items-end px-2 py-1">
+          <Text className=" !text-white text-end">
+            {formatChatDate(message.createdAt as number)}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -258,9 +261,9 @@ const MessageImagesGrouped = (props: MessageImagesGroupedProps) => {
 MessageImagesGrouped.displayName = "MessageImagesGrouped";
 
 const VideoRenderer = (props: VideoRendererProps) => {
-  const { attachment } = props;
+  const {attachment} = props;
 
-  const { width, height } = calculateDimensions(
+  const {width, height} = calculateDimensions(
     attachment.width as number,
     attachment.height as number,
   );
@@ -271,7 +274,7 @@ const VideoRenderer = (props: VideoRendererProps) => {
         source={{
           uri: attachment?.videoThumbnail?.uri as string,
         }}
-        style={{ width, height }}
+        style={{width, height}}
         contentFit="cover"
         cachePolicy="memory-disk"
       />
@@ -291,7 +294,7 @@ const VideoRenderer = (props: VideoRendererProps) => {
 VideoRenderer.displayName = "VideoRenderer";
 
 const AudioRenderer = (props: AudioRendererProps) => {
-  const { audio, message } = props;
+  const {audio, message} = props;
 
   const staticPlayerRef = useRef<IWaveformRef>(null);
 

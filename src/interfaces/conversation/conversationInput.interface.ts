@@ -5,6 +5,7 @@ export interface ConversationInputProps {
   control: any;
   handleOpenEmojiGifsSheet: () => void;
   handleSendMessage: any;
+  shouldShowInput: boolean;
   openFilePicker: () => void;
   attachments: AttachmentProps[];
   onAudioRecorded: (audio: AttachmentProps) => void;

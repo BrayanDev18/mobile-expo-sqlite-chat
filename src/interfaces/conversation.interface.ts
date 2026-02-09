@@ -1,3 +1,8 @@
+export interface ConversationItemProps {
+  conversation: ConversationProps;
+  index: number;
+}
+
 export interface ConversationResponse {
   results: ConversationProps[];
   info: {

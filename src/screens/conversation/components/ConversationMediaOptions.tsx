@@ -1,18 +1,18 @@
-import { Icon, Input, Text, ViewSheet } from "@/components";
-import { ScreenRoutes } from "@/constants";
-import { useMediaLoader, useMessages } from "@/hooks";
-import { AttachmentProps } from "@/interfaces";
-import { useMediaFilesSelectedStore } from "@/stores";
-import { formatMediaAsset, formatVideoDuration } from "@/utils";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { FlashList } from "@shopify/flash-list";
-import { Image, ImageStyle } from "expo-image";
-import { router, useLocalSearchParams } from "expo-router";
-import { Video } from "lucide-react-native";
+import {Icon, Input, Text, ViewSheet} from "@/components";
+import {ScreenRoutes} from "@/constants";
+import {useMediaLoader, useMessages} from "@/hooks";
+import {AttachmentProps} from "@/interfaces";
+import {useMediaFilesSelectedStore} from "@/stores";
+import {formatMediaAsset, formatVideoDuration} from "@/utils";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {FlashList} from "@shopify/flash-list";
+import {Image, ImageStyle} from "expo-image";
+import {router, useLocalSearchParams} from "expo-router";
+import {Video} from "lucide-react-native";
 import React from "react";
-import { useForm } from "react-hook-form";
-import { Pressable, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {useForm} from "react-hook-form";
+import {Dimensions, Pressable, View} from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface MediaOptionsProps {
   visiblePicker: boolean;
@@ -28,19 +28,26 @@ interface FilesToEditPreviewProps {
 
 const senderId = "brayan_001";
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const GAP = 6;
+const NUM_COLUMNS = 4;
+
+const ITEM_SIZE =
+  (SCREEN_WIDTH - GAP * (NUM_COLUMNS + 1)) / NUM_COLUMNS;
+
 export const ConversationMediaOptions = (props: MediaOptionsProps) => {
-  const { visiblePicker, handleClosePicker } = props;
+  const {visiblePicker, handleClosePicker} = props;
 
-  const { id: conversationId } = useLocalSearchParams();
-  const { bottom } = useSafeAreaInsets();
+  const {id: conversationId} = useLocalSearchParams();
+  const {bottom} = useSafeAreaInsets();
 
-  const { mediaFilesSelected, mediaFilesSelectedIds, toggleMediaFileSelected } =
+  const {mediaFilesSelected, mediaFilesSelectedIds, toggleMediaFileSelected} =
     useMediaFilesSelectedStore();
 
-  const { saveMessage } = useMessages(conversationId as string);
-  const { media, loadMore } = useMediaLoader();
+  const {saveMessage} = useMessages(conversationId as string);
+  const {media, loadMore} = useMediaLoader();
 
-  const { control, reset, handleSubmit, setValue } = useForm({
+  const {control, reset, handleSubmit} = useForm({
     defaultValues: {
       conversationId,
       body: "",
@@ -58,9 +65,12 @@ export const ConversationMediaOptions = (props: MediaOptionsProps) => {
   };
 
   const onSendMessage = async (values: any) => {
-    setValue("attachments", mediaFilesSelected);
-    console.log(values);
-    await saveMessage(values);
+    const payload = {
+      ...values,
+      attachments: mediaFilesSelected,
+    };
+
+    await saveMessage(payload);
     reset();
     handleClosePicker();
   };
@@ -72,19 +82,21 @@ export const ConversationMediaOptions = (props: MediaOptionsProps) => {
       onCloseSheet={handleClosePicker}
     >
       <View className="flex-1 gap-3">
-        <View className="flex-1">
+        <View className="flex-1 pl-1.5 py-2">
           <FlashList
             data={media}
-            numColumns={4}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              const isSelected = mediaFilesSelectedIds.includes(item.id);
+            numColumns={NUM_COLUMNS}
+            renderItem={({item}) => {
+              const isSelected = mediaFilesSelectedIds?.includes(item.id);
 
               return (
                 <Pressable
                   onPress={() => handleSelectImage(formatMediaAsset(item))}
-                  className="relative m-1"
+                  style={{
+                    width: ITEM_SIZE,
+                    height: ITEM_SIZE,
+                  }}
+                  className="my-0.5"
                 >
                   <Image
                     source={item.uri}
@@ -99,15 +111,16 @@ export const ConversationMediaOptions = (props: MediaOptionsProps) => {
                   />
 
                   {isSelected && (
-                    <View className="absolute right-2 top-2 h-6 w-6 items-center justify-center rounded-full bg-brand-500">
-                      <Icon name="Check" size={16} color="#fff" />
+                    <View
+                      className="absolute right-2 top-2 h-6 w-6 items-center justify-center rounded-full bg-brand-500">
+                      <Icon name="Check" size={16} color="#fff"/>
                     </View>
                   )}
 
                   {item.mediaType === "video" ? (
                     <View className="absolute bottom-0 p-1">
                       <View className="flex-row items-center gap-1.5 rounded-full bg-black/70 px-2 py-0.5">
-                        <Video color="white" fill="white" size={15} />
+                        <Video color="white" fill="white" size={15}/>
 
                         <Text className="font-medium !text-xs text-white">
                           {formatVideoDuration(item.duration)}
@@ -118,19 +131,17 @@ export const ConversationMediaOptions = (props: MediaOptionsProps) => {
                 </Pressable>
               );
             }}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
           />
         </View>
 
         <View
-          style={{ paddingBottom: bottom }}
+          style={{paddingBottom: bottom}}
           className="w-full flex-row items-center gap-4 px-4"
         >
-          <FilesToEditPreview mediaFilesSelected={mediaFilesSelected} />
+          <FilesToEditPreview mediaFilesSelected={mediaFilesSelected}/>
 
           <View className="flex-1">
-            <Input control={control} name="body" placeholder="Message" />
+            <Input control={control} name="body" placeholder="Message"/>
           </View>
 
           <Icon
@@ -148,11 +159,11 @@ export const ConversationMediaOptions = (props: MediaOptionsProps) => {
 };
 
 const FilesToEditPreview = (props: FilesToEditPreviewProps) => {
-  const { mediaFilesSelected, conversationId } = props;
+  const {mediaFilesSelected, conversationId} = props;
 
   return mediaFilesSelected.length > 0 ? (
     <Pressable
-      style={{ width: 45, height: 45 }}
+      style={{width: 45, height: 45}}
       onPress={() => {
         router.push({
           pathname: ScreenRoutes.imageEditor as any,
@@ -174,12 +185,12 @@ const FilesToEditPreview = (props: FilesToEditPreviewProps) => {
           top: isTop ? 0 : index * 1,
           left: isTop ? 0 : -(index * 2),
           zIndex: mediaFilesSelected.length - index,
-          transform: isTop ? [] : [{ rotate: `${-4 * index}deg` }],
+          transform: isTop ? [] : [{rotate: `${-4 * index}deg`}],
         };
 
         return (
           <View key={index}>
-            <Image source={{ uri: file.url }} style={itemStyle as ImageStyle} />
+            <Image source={{uri: file.url}} style={itemStyle as ImageStyle}/>
           </View>
         );
       })}

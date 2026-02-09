@@ -1,5 +1,5 @@
 import * as MediaLibrary from "expo-media-library";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 
 export const useMediaLoader = () => {
   const [media, setMedia] = useState<MediaLibrary.Asset[]>([]);
@@ -7,11 +7,17 @@ export const useMediaLoader = () => {
   const [endCursor, setEndCursor] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
 
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+
   const loadMedia = async () => {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     try {
+      if (permissionResponse?.status !== "granted") {
+        await requestPermission();
+      }
+
       const result = await MediaLibrary.getAssetsAsync({
         first: 30,
         sortBy: MediaLibrary.SortBy.creationTime,
@@ -27,11 +33,7 @@ export const useMediaLoader = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadMedia();
-  }, []);
+  }
 
   const loadMore = () => {
     if (hasMore && !isLoading) {
@@ -39,5 +41,13 @@ export const useMediaLoader = () => {
     }
   };
 
-  return { media, hasMore, loadMore, isLoading };
+  useEffect(() => {
+    MediaLibrary.requestPermissionsAsync().then(({status}) => {
+      if (status === "granted") {
+        loadMedia().then()
+      }
+    });
+  }, [loadMedia]);
+
+  return { media, hasMore, loadMore, loadMedia, isLoading };
 };
